@@ -3,7 +3,7 @@ import time
 import copy
 
 def bubble_sort_iteration(a, reverse=False):
-    print "bubble_sort_iteration()"
+#    print "bubble_sort_iteration()"
     
     n = len(a)
     
@@ -68,30 +68,73 @@ def init_data_matrix(data_matrix):
 
 
 
-
-def qsort_simple(a):
-    print "qsort_simple(a)"
-    
-#    numbers of comparison and moving operations for KEYS only
-#    (not values)
-    cmpCount = 0
-    mvCount = 0
-    
-    
-    return cmpCount, mvCount
+def qsort(array, cmpCount, mvCount):
+    _qsort(array, 0, len(array) - 1)
 
 
+def _qsort(array, start, stop):
+#    [start, stop]
+    if stop - start > 0:
+        randPos = np.random.randint(start, stop+1)
+        pivot, left, right = array[randPos], start, stop
+        
+        while left <= right:
+            while array[left] < pivot:
+                left += 1
+            while array[right] > pivot:
+                right -= 1
+            
+            if left <= right:
+                array[left], array[right] = array[right], array[left]
+                left += 1
+                right -= 1
+                
+        _qsort(array, start, right)
+        _qsort(array, left, stop)
+        
 
-def qsort_choice(a):
-    print "qsort_choice(a)"
-    
-#    numbers of comparison and moving operations for KEYS only
-#    (not values)
-    cmpCount = 0
-    mvCount = 0
+def _selectsort(array):
+    N = len(array)
     
     
-    return cmpCount, mvCount
+    for k in range(N):
+        minInd = k
+        for i in range(k+1, N):
+            if array[i] < array[minInd]:
+                minInd = i
+#                print "min: ", array[minInd] 
+            
+        array[k], array[minInd] = array[minInd], array[k]
+
+
+
+def qsort_select(array, m, cmpCount, mvCount):
+    _qsort_select(array, 0, len(array) - 1, m)
+
+
+def _qsort_select(array, start, stop, m):
+#    [start, stop]
+    if stop - start + 1 <= m: # leq than m elements
+        _selectsort(array[start : stop+1])
+        
+    else:
+        randPos = np.random.randint(start, stop+1)
+        pivot, left, right = array[randPos], start, stop
+        
+        while left <= right:
+            while array[left] < pivot:
+                left += 1
+            while array[right] > pivot:
+                right -= 1
+            
+            if left <= right:
+                array[left], array[right] = array[right], array[left]
+                left += 1
+                right -= 1
+                
+        _qsort_select(array, start, right, m)
+        _qsort_select(array, left, stop, m)
+
 
 
 
