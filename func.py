@@ -2,6 +2,9 @@ import numpy as np
 import time
 import copy
 
+glob_cmp_cnt = -1
+glob_swp_cnt = -1
+
 def bubble_sort_iteration(a, reverse=False):
 #    print "bubble_sort_iteration()"
     
@@ -27,14 +30,13 @@ def bubble_sort_iteration(a, reverse=False):
 
 
 def init_data_matrix(data_matrix):
-    print "init_data_matrix()"
     
     n = data_matrix.shape[1]
     
     
     #Create random 1d array
     randRow = np.random.randint(0, 10, n)
-    print randRow
+#    print randRow
     
     
     data_matrix[n] = randRow
@@ -68,12 +70,20 @@ def init_data_matrix(data_matrix):
 
 
 
-def qsort(array, cmpCount, mvCount):
+def qsort(array):
+#    glob_cmp_cnt, glob_swp_cnt -- counters of Compare & Swap operations
+    global glob_cmp_cnt
+    global glob_swp_cnt
+    glob_cmp_cnt = 0
+    glob_swp_cnt = 0
     _qsort(array, 0, len(array) - 1)
-
+    
 
 def _qsort(array, start, stop):
 #    [start, stop]
+    global glob_cmp_cnt
+    global glob_swp_cnt
+    
     if stop - start > 0:
         randPos = np.random.randint(start, stop+1)
         pivot, left, right = array[randPos], start, stop
@@ -81,39 +91,54 @@ def _qsort(array, start, stop):
         while left <= right:
             while array[left] < pivot:
                 left += 1
+                glob_cmp_cnt += 1
+            
             while array[right] > pivot:
                 right -= 1
+                glob_cmp_cnt+=1
             
             if left <= right:
                 array[left], array[right] = array[right], array[left]
                 left += 1
                 right -= 1
-                
+                glob_swp_cnt += 1
+        
+        
         _qsort(array, start, right)
         _qsort(array, left, stop)
         
 
 def _selectsort(array):
+    global glob_cmp_cnt
+    global glob_swp_cnt
     N = len(array)
-    
     
     for k in range(N):
         minInd = k
         for i in range(k+1, N):
             if array[i] < array[minInd]:
                 minInd = i
-#                print "min: ", array[minInd] 
+            glob_cmp_cnt += 1
+            
             
         array[k], array[minInd] = array[minInd], array[k]
+        glob_swp_cnt += 1
 
 
 
-def qsort_select(array, m, cmpCount, mvCount):
+def qsort_select(array, m):
+    global glob_cmp_cnt
+    global glob_swp_cnt
+    glob_cmp_cnt = 0
+    glob_swp_cnt = 0
     _qsort_select(array, 0, len(array) - 1, m)
 
 
 def _qsort_select(array, start, stop, m):
 #    [start, stop]
+    global glob_cmp_cnt
+    global glob_swp_cnt
+    
     if stop - start + 1 <= m: # leq than m elements
         _selectsort(array[start : stop+1])
         
@@ -124,13 +149,16 @@ def _qsort_select(array, start, stop, m):
         while left <= right:
             while array[left] < pivot:
                 left += 1
+                glob_cmp_cnt += 1
             while array[right] > pivot:
                 right -= 1
+                glob_cmp_cnt += 1
             
             if left <= right:
                 array[left], array[right] = array[right], array[left]
                 left += 1
                 right -= 1
+                glob_swp_cnt += 1
                 
         _qsort_select(array, start, right, m)
         _qsort_select(array, left, stop, m)
