@@ -185,6 +185,12 @@ Ex:
     
     ax_time.plot(m_vals, times_qsort, label='q_sort')
     ax_time.plot(m_vals, times_qselect, label='q_select')
+    time_title = """
+Average sorting time. N = %r, TIMES = %r """ % (N, TIMES) 
+    ax_time.set_title(time_title)
+    ax_time.set_xlabel("M (len_selectsort)")
+    ax_time.set_ylabel("Average time, sec")
+    ax_time.legend(loc=2)
     
 #    plt.show()
     fig_cmp.savefig("cmp_%r_%r_%r.png" % (N, M, TIMES))
