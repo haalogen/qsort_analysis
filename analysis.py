@@ -3,6 +3,7 @@ import numpy as np
 import func as fu
 import copy
 import time
+import matplotlib.pyplot as plt
 
 
 def main():
@@ -36,7 +37,7 @@ Ex:
         
     
     for tm in range(TIMES):
-        print "Iteration # %r." % tm
+        print "Iteration # \r", tm,
         data_matrix = np.zeros( (ROWS_NUM, N) )
         
         fu.init_data_matrix(data_matrix)
@@ -66,8 +67,8 @@ Ex:
             if all(data_matrix[k] == sorted_array):
                 qsort_is_correct[k] = True
         
-        
-        print "qsort_is_correct: ", all(qsort_is_correct)
+        if not all(qsort_is_correct):
+            print "qsort_is_correct: ", all(qsort_is_correct)
             
         
         start_qselect = time.time()
@@ -85,8 +86,8 @@ Ex:
             if all(data_matrix2[k] == sorted_array):
                 qsort_select_is_correct[k] = True
         
-        
-        print "qsort_select_is_correct: ", all(qsort_select_is_correct)
+        if not all(qsort_select_is_correct):
+            print "qsort_select_is_correct: ", all(qsort_select_is_correct)
         
 #        print "cmp_simple:", cmp_simple
 #        print "swp_simple:", swp_simple
@@ -108,8 +109,29 @@ Ex:
     
     print "time_qsort: %r sec" % time_qsort
     print "time_qselect: %r sec \n" % time_qselect
-
     
+    with open('time.txt', 'a') as time_file:
+        time_file.write("%r %r %r\n" % (M, time_qsort, time_qselect))
+    
+    m_vals = []
+    times_qsort = []
+    times_qselect = []
+#    reading times for different M from time.txt
+    with open('time.txt', 'r') as time_file:
+        for line in time_file.readlines():
+            values = line.split()
+            _m = int(values[0])
+            _time_qsort = float(values[1])
+            _time_qselect = float(values[2])
+            
+            if not (_m in m_vals): 
+                m_vals.append(_m)
+                times_qsort.append(_time_qsort)
+                times_qselect.append(_time_qselect)
+        
+    print 'Ms: ', m_vals
+    print 'T_qsort: ', times_qsort
+    print 'T_qselect: ', times_qselect
     
 #    print "Sorted (ascending) by qsort() stand 'data_matrix':"
 #    print data_matrix[   :N], '\n'
@@ -121,7 +143,56 @@ Ex:
 #    print data_matrix2[N:N+1], '\n'
 #    print data_matrix2[N+1: ], '\n'
     
-
+    
+#    plotting cmp graph
+    fig_cmp = plt.figure()
+    ax_cmp = fig_cmp.add_subplot(111)
+    
+    ax_cmp.plot(range(ROWS_NUM), cmp_simple, label='q_sort')
+    ax_cmp.plot(range(ROWS_NUM), cmp_select, 
+                label='q_select, m=%r' % M)
+    cmp_title = """
+# of CMP (compare) operations. N = %r, M = %r, TIMES = %r.
+    """ % (N, M, TIMES)
+    ax_cmp.set_title(cmp_title)
+    ax_cmp.set_xlabel("Test table's row # (0 .. 2*N - 1)")
+    ax_cmp.set_ylabel("# of CMP operations")
+    ax_cmp.set_ylim([0, N*10])
+    ax_cmp.legend()
+    
+    
+    
+#    plotting swp graph
+    fig_swp = plt.figure()
+    ax_swp = fig_swp.add_subplot(111)
+    
+    ax_swp.plot(range(ROWS_NUM), swp_simple, label='q_sort')
+    lbl = 'q_select, m=%r' % M
+    ax_swp.plot(range(ROWS_NUM), swp_select, label=lbl)
+    swp_title = """
+# of SWP (swap) operations. N = %r, M = %r, TIMES = %r.
+    """ % (N, M, TIMES)
+    ax_swp.set_title(swp_title)
+    ax_swp.set_xlabel("Test table's row # (0 .. 2*N - 1)")
+    ax_swp.set_ylabel("# of SWP operations")
+    ax_swp.set_ylim([0, N*5])
+    ax_swp.legend(loc=2)    # 2 for upper left location
+    
+    
+#    plotting times graph
+    fig_time = plt.figure()
+    ax_time = fig_time.add_subplot(111)
+    
+    ax_time.plot(m_vals, times_qsort, label='q_sort')
+    ax_time.plot(m_vals, times_qselect, label='q_select')
+    
+#    plt.show()
+    fig_cmp.savefig("cmp_%r_%r_%r.png" % (N, M, TIMES))
+    fig_swp.savefig("swp_%r_%r_%r.png" % (N, M, TIMES))
+    fig_time.savefig("time.png")
+    
+#    plt.close('all')
+    
 
 if __name__ == '__main__':
     main()
